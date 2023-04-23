@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .corps_table {
+            border: 0.5px solid grey;
+            text-align: center;
+            font-size: 12px;
+            table-layout: fixed;
+            width: 98vw;
+            margin: auto 1vw;
+        }
+
+        .th {
+            background-color: darkgrey;
+            color: white;
+            font-size: 14px;
+        }
+
+        td {
+            border: 0.3px solid grey;
+        }
+
+        .narrow_col {
+            width: 15%;
+        }
+
+        .supernarrow_col {
+            width: 5%;
+        }
+    </style>
+
+    <script>
+        function show_search_keyword() {
+            fetch("/search_keyword/")
+                .then(response => response.json())
+                .then(data => {
+                    return_keyword = `<p class="col-lg-8 mx-auto lead">
+                                         요청하신 결과입니다. (키워드: ${data['return_keyword']}) (로딩에 시간이 소요될 수 있습니다.)
+                                     </p>
+                `
+                $("#your_request").append(return_keyword)
+                })
+        }
+
+        function get_searched_corps() {
+            fetch("/searched_corps/")
+                .then((response) => response.json())
+                .then((data) => {
+                    show_corps_table(data["searched_corps"]);
+                });
+        }
+
+        function show_corps_table(corps) {
+            let corps_table = $('<table class="corps_table">')
+
+            let header_row = $('<tr>')
+            header_row.append($('<td class="supernarrow_col th">').text('종목코드'))
+            header_row.append($('<td class="supernarrow_col th">').text('상장시장'))
+            header_row.append($('<td class="narrow_col th">').text('종목명'))
+            header_row.append($('<td class="narrow_col th">').text('섹터'))
+            header_row.append($('<td class="th">').text('제품'))
+            header_row.append($('<td class="supernarrow_col th">').text('시총(십억)'))
+            header_row.append($('<td class="supernarrow_col th">').text('PBR'))
+            header_row.append($('<td class="supernarrow_col th">').text('PSR'))
+            header_row.append($('<td class="supernarrow_col th">').text('POPR'))
+            header_row.append($('<td class="supernarrow_col th">').text('PER'))
+
+            corps_table.append(header_row)
+
+            corps.forEach(function (corp) {
+                let data_row = $('<tr>')
+                data_row.append($('<td>').text(corp['stock_code']))
+                data_row.append($('<td>').text(corp['corp_cls']))
+                data_row.append($('<td>').text(corp['corp_name']))
+                data_row.append($('<td>').text(corp['sector']))
+                data_row.append($('<td>').text(corp['product']))
+                market_cap = Math.round(corp['market_cap'] / (10 ** 9))
+                market_cap = market_cap.toLocaleString()
+                data_row.append($('<td>').text(market_cap))
+                pbr = corp['PBR'].toFixed(1)
+                psr = corp['PSR'].toFixed(1)
+                popr = corp['POPR'].toFixed(1)
+                per = corp['PER'].toFixed(1)
+                data_row.append($('<td>').text(pbr))
+                data_row.append($('<td>').text(psr))
+                data_row.append($('<td>').text(popr))
+                data_row.append($('<td>').text(per))
+
+                corps_table.append(data_row)
+            })
+
+            $("#corps_table").append(corps_table);
+        }
+
+        $(document).ready(() => {
+            show_search_keyword();
+            get_searched_corps();
+        });
+    </script>
+</head>
+
+<body>
+    <div class="p-5 text-center bg-body-tertiary">
+        <div class="container">
+            <h1 class="text-body-emphasis">주식 탐색기</h1>
+            <div id="your_request"></div>
+        </div>
+    </div>
+    <div id="corps_table"></div>
+</body>
+
+</html>
