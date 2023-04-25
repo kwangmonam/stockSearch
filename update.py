@@ -29,9 +29,9 @@ df_corp_infos.to_csv('./data/corp_infos.csv', mode='w')
 ## 2. market 업데이트
 
 # 수정할 날짜 지정
-# last update = 2023-04-21
-start_date = date(2023, 4, 22)
-end_date = date(2023, 4, 21)
+# last update = 2023-04-24
+start_date = date(2023, 4, 24)
+end_date = date(2023, 4, 24)
 
 # 추가할 날짜 리스트 만들기
 delta = timedelta(days=1)
@@ -62,9 +62,3 @@ for i in range(len(dates)):
     markets = pd.concat([markets, market], ignore_index=True)
 
 markets.to_csv('./data/markets.csv', mode='a')
-
-
-
-
-
-
